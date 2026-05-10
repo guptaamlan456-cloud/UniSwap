@@ -10,6 +10,7 @@ from config import Config
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
+
 login_manager.login_view = "auth.login"
 login_manager.login_message_category = "info"
 
@@ -23,6 +24,7 @@ def create_app():
     login_manager.init_app(app)
 
     with app.app_context():
+        from app.models import *
         db.create_all()
 
     cloudinary.config(
