@@ -4,13 +4,14 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
-login_manager = LoginManager()
 
+login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message_category = "info"
 
@@ -23,8 +24,10 @@ def create_app():
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
+    # Import models before creating tables
+    import app.models
+
     with app.app_context():
-        from app.models import *
         db.create_all()
 
     cloudinary.config(
@@ -45,7 +48,6 @@ def create_app():
 
     @app.context_processor
     def inject_current_year():
-        from datetime import datetime
-        return {"current_year": datetime.utcnow().year}
+        return {"current_year": datetime.now().year}
 
     return app
