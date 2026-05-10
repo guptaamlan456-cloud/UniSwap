@@ -14,7 +14,13 @@ class Config:
     if db_url and db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
 
-    SQLALCHEMY_DATABASE_URI = db_url
+    if db_url:
+        db_url = db_url.replace(
+            "postgresql://",
+            "postgresql+psycopg://"
+        )
+
+    SQLALCHEMY_DATABASE_URI = db_url.replace("postgresql://", "postgresql+psycopg://")
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
