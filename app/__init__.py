@@ -25,7 +25,7 @@ def create_app():
     login_manager.init_app(app)
 
     # Import models before creating tables
-    import app.models
+    from app import models
 
     with app.app_context():
         db.create_all()
