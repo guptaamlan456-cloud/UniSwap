@@ -29,8 +29,6 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-        from seed_data import seed
-        seed()
 
     cloudinary.config(
         cloud_name=app.config.get("CLOUDINARY_CLOUD_NAME"),
