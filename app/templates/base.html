@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UniSwap | Student Marketplace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-white bg-white shadow-sm border-bottom">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+          <img
+            src="{{ url_for('static', filename='images/uniswap-logo.png') }}"
+            alt="UniSwap"
+            class="brand-logo"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"
+          />
+          <span class="brand-fallback text-primary fw-bold">UniSwap</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto align-items-center">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('listings.browse') }}">Browse</a></li>
+            {% if current_user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('chat.inbox') }}">Chats</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('listings.my_listings') }}">My Listings</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile') }}">Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('listings.create_listing') }}">Sell</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
+            {% else %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
+            <li class="nav-item"><a class="nav-link btn btn-sm btn-primary text-white ms-2" href="{{ url_for('auth.register') }}">Create Account</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container py-5">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+
+    <footer class="bg-dark text-light py-3">
+      <div class="container text-center small">
+        © {{ current_year if current_year else "2026" }} UniSwap · Built for students leaving Malaysia
+      </div>
+    </footer>
+
+    <div class="nancy-widget">
+      <button type="button" class="nancy-toggle" id="nancy-toggle">
+        <img src="{{ url_for('static', filename='images/nancy-logo.png') }}" alt="Nancy" />
+      </button>
+
+      <div class="nancy-panel d-none" id="nancy-panel">
+        <div class="nancy-header">
+          <div class="d-flex align-items-center gap-2">
+            <img src="{{ url_for('static', filename='images/nancy-logo.png') }}" alt="Nancy" class="nancy-avatar" />
+            <div>
+              <strong>Nancy</strong>
+              <div class="small text-muted">Support Assistant</div>
+            </div>
+          </div>
+          <button type="button" class="btn-close" id="nancy-close" aria-label="Close"></button>
+        </div>
+        <div class="nancy-body" id="nancy-body">
+          <div class="nancy-message">Hi, how may I help you?</div>
+          <div class="nancy-actions" id="nancy-actions">
+            <button type="button" class="btn btn-primary btn-sm" data-nancy-action="sell">Sell</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" data-nancy-action="buy">Buy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>

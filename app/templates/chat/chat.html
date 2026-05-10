@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8 mx-auto">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title">Chat about {{ listing.title }}</h4>
+        <p class="text-muted">Seller: {{ listing.seller.name }} · University: {{ listing.university }}</p>
+        <div class="mb-4">
+          {% for message in messages %}
+            <div class="border-bottom py-2">
+              <strong>{{ message.sender.name }}</strong> <span class="text-muted small">{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+              <p class="mb-0">{{ message.body }}</p>
+            </div>
+          {% else %}
+            <div class="alert alert-secondary">No messages yet. Send the first one.</div>
+          {% endfor %}
+        </div>
+        <form method="post">
+          <div class="mb-3"><textarea class="form-control" name="message" rows="3" placeholder="Type your message"></textarea></div>
+          <button class="btn btn-primary">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

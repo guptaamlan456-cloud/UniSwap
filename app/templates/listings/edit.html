@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-5">
+        <h2 class="card-title mb-2">Edit listing</h2>
+        <p class="text-muted mb-4">Update details, urgency, and images for your listing.</p>
+
+        {% set existing_images = listing.get_image_urls() %}
+        {% if existing_images %}
+        <div class="mb-4">
+          <p class="form-label fw-semibold mb-2">Current Images</p>
+          <div class="d-flex flex-wrap gap-2">
+            {% for img in existing_images %}
+            <img src="{{ img }}" class="rounded border" style="width: 110px; height: 80px; object-fit: cover;" alt="Listing image">
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-4">
+            {{ form.title.label(class_='form-label fw-semibold') }}
+            {{ form.title(class_='form-control form-control-lg') }}
+          </div>
+
+          <div class="mb-4">
+            {{ form.description.label(class_='form-label fw-semibold') }}
+            {{ form.description(class_='form-control', rows=5) }}
+          </div>
+
+          <div class="mb-4">
+            {{ form.images.label(class_='form-label fw-semibold') }}
+            {{ form.images(class_='form-control', accept='image/*', multiple=True) }}
+            <p class="text-muted small mt-2 mb-0">Upload new images to add them to this listing.</p>
+          </div>
+
+          <div class="form-check mb-4">
+            {{ form.clear_images(class_='form-check-input', id='clear-images') }}
+            {{ form.clear_images.label(class_='form-check-label', for_='clear-images') }}
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              {{ form.price.label(class_='form-label fw-semibold') }}
+              {{ form.price(class_='form-control form-control-lg') }}
+            </div>
+            <div class="col-md-4">
+              {{ form.category.label(class_='form-label fw-semibold') }}
+              {{ form.category(class_='form-select form-select-lg') }}
+            </div>
+            <div class="col-md-4">
+              {{ form.condition.label(class_='form-label fw-semibold') }}
+              {{ form.condition(class_='form-select form-select-lg') }}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              {{ form.location.label(class_='form-label fw-semibold') }}
+              {{ form.location(class_='form-select form-select-lg', id='location') }}
+            </div>
+            <div class="col-md-6">
+              {{ form.university.label(class_='form-label fw-semibold') }}
+              {{ form.university(class_='form-select form-select-lg', id='university') }}
+            </div>
+          </div>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6 d-none" id="location-other-wrap">
+              {{ form.location_other.label(class_='form-label fw-semibold') }}
+              {{ form.location_other(class_='form-control form-control-lg', placeholder='Enter area if not listed') }}
+            </div>
+            <div class="col-md-6 d-none" id="university-other-wrap">
+              {{ form.university_other.label(class_='form-label fw-semibold') }}
+              {{ form.university_other(class_='form-control form-control-lg', placeholder='Enter university if not listed') }}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              {{ form.urgency_level.label(class_='form-label fw-semibold') }}
+              {{ form.urgency_level(class_='form-select form-select-lg') }}
+            </div>
+            <div class="col-md-6">
+              {{ form.departure_date.label(class_='form-label fw-semibold') }}
+              {{ form.departure_date(class_='form-control form-control-lg') }}
+            </div>
+          </div>
+
+          <div class="form-check mb-4">
+            {{ form.free(class_='form-check-input', id='free-check-edit') }}
+            {{ form.free.label(class_='form-check-label', for_='free-check-edit') }}
+          </div>
+
+          <div class="d-flex gap-2 justify-content-end">
+            <button
+              type="submit"
+              class="btn btn-outline-danger me-auto"
+              formaction="{{ url_for('listings.delete_listing', listing_id=listing.id) }}"
+              formmethod="post"
+              onclick="return confirm('Delete this listing permanently?');"
+            >
+              Delete listing
+            </button>
+            <a href="{{ url_for('listings.view', listing_id=listing.id) }}" class="btn btn-outline-secondary">Cancel</a>
+            <button class="btn btn-primary">Save listing</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const location = document.getElementById("location");
+    const university = document.getElementById("university");
+    const locationWrap = document.getElementById("location-other-wrap");
+    const universityWrap = document.getElementById("university-other-wrap");
+
+    function toggleOther(selectEl, wrapEl) {
+      if (!selectEl || !wrapEl) return;
+      wrapEl.classList.toggle("d-none", selectEl.value !== "Other");
+    }
+
+    if (location) {
+      location.addEventListener("change", () => toggleOther(location, locationWrap));
+      toggleOther(location, locationWrap);
+    }
+    if (university) {
+      university.addEventListener("change", () => toggleOther(university, universityWrap));
+      toggleOther(university, universityWrap);
+    }
+  })();
+</script>
+{% endblock %}

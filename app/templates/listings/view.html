@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set listing_images = listing.get_image_urls() %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm overflow-hidden">
+      {% if listing_images %}
+      <img src="{{ listing_images[0] }}" class="card-img-top listing-detail-image" alt="{{ listing.title }}" style="max-height: 500px; object-fit: cover;">
+      {% else %}
+      <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 500px;">
+        <div class="text-center">
+          <p class="mb-0">No image available</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if listing_images|length > 1 %}
+      <div class="p-3 border-top">
+        <div class="d-flex flex-wrap gap-2">
+          {% for img in listing_images %}
+          <img src="{{ img }}" alt="Listing image" class="rounded border" style="width: 100px; height: 70px; object-fit: cover;">
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="card-body p-5">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+          <div>
+            <h1 class="mb-2">{{ listing.title }}</h1>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <span class="badge bg-light text-dark">{{ listing.category }}</span>
+              <span class="badge bg-light text-dark">{{ listing.condition }}</span>
+              <span class="badge badge-market {{ listing.urgency_badge_class }}">{{ listing.urgency_label }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-top border-bottom py-4 mb-4">
+          <div class="row">
+            <div class="col-md-4 mb-3 mb-md-0">
+              <p class="text-muted small mb-1">Price</p>
+              <h2 class="mb-0">{{ 'FREE' if listing.free else 'RM ' ~ ('{:.2f}'.format(listing.price)) }}</h2>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+              <p class="text-muted small mb-1">Location</p>
+              <p class="mb-0 fw-semibold">{{ listing.location }}</p>
+            </div>
+            <div class="col-md-4">
+              <p class="text-muted small mb-1">University</p>
+              <p class="mb-0 fw-semibold">{{ listing.university }}</p>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-4">
+              <p class="text-muted small mb-1">Available until</p>
+              <p class="mb-0 fw-semibold">{{ listing.departure_date.strftime('%B %d, %Y') }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <h4 class="mb-3">About this item</h4>
+          <p class="text-muted" style="line-height: 1.8;">{{ listing.description }}</p>
+        </div>
+
+        {% if current_user.is_authenticated and listing.seller_id == current_user.id %}
+        <button class="btn btn-outline-secondary btn-lg w-100" disabled>
+          This is your listing
+        </button>
+        <a href="{{ url_for('listings.edit_listing', listing_id=listing.id) }}" class="btn btn-primary btn-lg w-100 mt-2">
+          Edit listing
+        </a>
+        {% elif not listing.is_active %}
+        <button class="btn btn-dark btn-lg w-100" disabled>
+          Listing unlisted
+        </button>
+        {% else %}
+        <form method="post" action="{{ url_for('chat.start_chat', listing_id=listing.id) }}">
+          <button class="btn btn-primary btn-lg w-100">Message seller</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm p-4 mb-3">
+      <h5 class="mb-4">Seller Information</h5>
+      <div class="d-flex align-items-center mb-4">
+        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem;">
+          {{ listing.seller.name[0].upper() }}
+        </div>
+        <div class="ms-3">
+          <h6 class="mb-0">{{ listing.seller.name }}</h6>
+          <p class="text-muted small mb-0">{{ listing.seller.location }} · {{ listing.seller.university }}</p>
+        </div>
+      </div>
+      {% if current_user.is_authenticated and listing.seller_id == current_user.id %}
+      <button class="btn btn-outline-secondary w-100" disabled>
+        This is your listing
+      </button>
+      <a href="{{ url_for('listings.edit_listing', listing_id=listing.id) }}" class="btn btn-primary w-100 mt-2">
+        Edit listing
+      </a>
+      <form method="post" action="{{ url_for('listings.delete_listing', listing_id=listing.id) }}" class="mt-2">
+        <button type="submit" class="btn btn-outline-danger w-100">Delete listing</button>
+      </form>
+      {% elif not listing.is_active %}
+      <button class="btn btn-dark w-100" disabled>
+        Listing unlisted
+      </button>
+      {% else %}
+      <form method="post" action="{{ url_for('chat.start_chat', listing_id=listing.id) }}">
+        <button class="btn btn-primary w-100">Message seller</button>
+      </form>
+      {% endif %}
+    </div>
+
+    <div class="card border-0 shadow-sm p-4">
+      <h5 class="mb-3">Listing Details</h5>
+      <div class="list-unstyled">
+        <div class="mb-3">
+          <p class="text-muted small mb-1">Category</p>
+          <p class="mb-0">{{ listing.category }}</p>
+        </div>
+        <div class="mb-3">
+          <p class="text-muted small mb-1">Condition</p>
+          <p class="mb-0">{{ listing.condition }}</p>
+        </div>
+        <div class="mb-3">
+          <p class="text-muted small mb-1">Posted on</p>
+          <p class="mb-0">{{ listing.created_at.strftime('%B %d, %Y') }}</p>
+        </div>
+        <div class="mb-3">
+          <p class="text-muted small mb-1">Urgency</p>
+          <p class="mb-0">
+            <span class="badge badge-market {{ listing.urgency_badge_class }}">{{ listing.urgency_label }}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-12">
+    <a href="{{ url_for('listings.browse') }}" class="btn btn-outline-secondary">Back to listings</a>
+  </div>
+</div>
+{% endblock %}

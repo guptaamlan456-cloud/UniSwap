@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-1">Chats</h2>
+    <p class="text-muted mb-0">Your conversations with buyers and sellers.</p>
+  </div>
+</div>
+
+{% if threads %}
+<div class="list-group shadow-sm rounded-4 overflow-hidden">
+  {% for thread in threads %}
+  {% set other_user = thread.buyer if current_user.id == thread.seller_id else thread.seller %}
+  <a href="{{ url_for('chat.thread_view', thread_id=thread.id) }}" class="list-group-item list-group-item-action p-3">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <h6 class="mb-1">{{ thread.listing.title }}</h6>
+        <p class="mb-1 text-muted small">With {{ other_user.name }} · {{ thread.listing.location }} · {{ thread.listing.university }}</p>
+        <span class="badge {{ 'bg-success' if thread.status == 'accepted' else 'bg-danger' if thread.status == 'declined' else 'bg-secondary' }}">
+          {{ thread.status|capitalize }}
+        </span>
+      </div>
+      <small class="text-muted">{{ thread.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">No chats yet. Start from a listing by clicking Message.</div>
+{% endif %}
+{% endblock %}

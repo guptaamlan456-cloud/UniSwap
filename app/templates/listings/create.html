@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-5">
+        <h2 class="card-title mb-2">Create a listing</h2>
+        <p class="text-muted mb-4">Share an item you want to sell or give away. Add a photo and details to attract buyers.</p>
+        
+        <form method="post" enctype="multipart/form-data">
+          {{ form.hidden_tag() }}
+          
+          <div class="mb-4">
+            {{ form.title.label(class_='form-label fw-semibold') }}
+            {{ form.title(class_='form-control form-control-lg', placeholder='Bedroom desk with storage') }}
+            {% for error in form.title.errors %}
+              <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="mb-4">
+            {{ form.description.label(class_='form-label fw-semibold') }}
+            {{ form.description(class_='form-control', rows=5, placeholder='Describe the item: size, age, condition, reason for selling...') }}
+            {% for error in form.description.errors %}
+              <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="mb-4">
+            {{ form.images.label(class_='form-label fw-semibold') }}
+            <div class="form-control-lg border border-2 border-dashed rounded-3 p-4 text-center" id="image-drop-zone" style="cursor: pointer;">
+              {{ form.images(class_='d-none', id='image-input', accept='image/*', multiple=True) }}
+              <p class="mb-2" id="image-label">Click to upload or drag and drop</p>
+              <p class="text-muted small mb-0">PNG, JPG, GIF - multiple images supported</p>
+              <div id="image-preview" class="mt-3"></div>
+            </div>
+            {% for error in form.images.errors %}
+              <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              {{ form.price.label(class_='form-label fw-semibold') }}
+              {{ form.price(class_='form-control form-control-lg', placeholder='0.00') }}
+              {% for error in form.price.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-4">
+              {{ form.category.label(class_='form-label fw-semibold') }}
+              {{ form.category(class_='form-select form-select-lg') }}
+              {% for error in form.category.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-4">
+              {{ form.condition.label(class_='form-label fw-semibold') }}
+              {{ form.condition(class_='form-select form-select-lg') }}
+              {% for error in form.condition.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              {{ form.location.label(class_='form-label fw-semibold') }}
+              {{ form.location(class_='form-select form-select-lg', id='location') }}
+              {% for error in form.location.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-6">
+              {{ form.university.label(class_='form-label fw-semibold') }}
+              {{ form.university(class_='form-select form-select-lg', id='university') }}
+              {% for error in form.university.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6 d-none" id="location-other-wrap">
+              {{ form.location_other.label(class_='form-label fw-semibold') }}
+              {{ form.location_other(class_='form-control form-control-lg', placeholder='Enter area if not listed') }}
+              {% for error in form.location_other.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-6 d-none" id="university-other-wrap">
+              {{ form.university_other.label(class_='form-label fw-semibold') }}
+              {{ form.university_other(class_='form-control form-control-lg', placeholder='Enter university if not listed') }}
+              {% for error in form.university_other.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              {{ form.urgency_level.label(class_='form-label fw-semibold') }}
+              {{ form.urgency_level(class_='form-select form-select-lg') }}
+              {% for error in form.urgency_level.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-6">
+              {{ form.departure_date.label(class_='form-label fw-semibold') }}
+              {{ form.departure_date(class_='form-control form-control-lg') }}
+              {% for error in form.departure_date.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="form-check mb-4">
+            {{ form.free(class_='form-check-input', id='free-check') }}
+            {{ form.free.label(class_='form-check-label', for_='free-check') }}
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ url_for('listings.browse') }}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+            <button class="btn btn-primary btn-lg">Post listing</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const dropZone = document.getElementById('image-drop-zone');
+const imageInput = document.getElementById('image-input');
+const preview = document.getElementById('image-preview');
+const label = document.getElementById('image-label');
+
+dropZone.addEventListener('click', () => imageInput.click());
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.classList.add('border-primary');
+});
+dropZone.addEventListener('dragleave', () => {
+  dropZone.classList.remove('border-primary');
+});
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('border-primary');
+  imageInput.files = e.dataTransfer.files;
+  updatePreview();
+});
+
+imageInput.addEventListener('change', updatePreview);
+
+function updatePreview() {
+  const files = Array.from(imageInput.files || []);
+  if (!files.length) return;
+  label.style.display = 'none';
+  preview.innerHTML = '';
+  files.slice(0, 4).forEach((file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.className = 'img-fluid rounded me-2 mb-2';
+      img.style.maxHeight = '120px';
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function toggleOther(selectId, wrapId) {
+  const selectEl = document.getElementById(selectId);
+  const wrapEl = document.getElementById(wrapId);
+  if (!selectEl || !wrapEl) return;
+  wrapEl.classList.toggle('d-none', selectEl.value !== 'Other');
+}
+
+document.getElementById('location').addEventListener('change', () => toggleOther('location', 'location-other-wrap'));
+document.getElementById('university').addEventListener('change', () => toggleOther('university', 'university-other-wrap'));
+toggleOther('location', 'location-other-wrap');
+toggleOther('university', 'university-other-wrap');
+</script>
+{% endblock %}

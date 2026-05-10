@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="market-header rounded-4 p-5 mb-5 shadow-sm bg-white">
+  <div class="row align-items-center">
+    <div class="col-lg-7">
+      <p class="text-uppercase text-primary fw-semibold mb-2">Student Marketplace</p>
+      <h1 class="display-5 fw-bold">Buy, sell and move faster with campus deals.</h1>
+      <p class="lead text-muted">Discover furniture, textbooks, electronics and more from students leaving Malaysia.</p>
+      <div class="d-flex gap-2 flex-wrap mt-4">
+        <a href="{{ url_for('listings.browse') }}" class="btn btn-primary btn-lg">Browse listings</a>
+        <a href="{{ url_for('listings.create_listing') }}" class="btn btn-outline-secondary btn-lg">Post a listing</a>
+      </div>
+    </div>
+    <div class="col-lg-5 mt-4 mt-lg-0">
+      <div class="market-hero-card p-4 rounded-4 bg-primary text-white shadow-lg">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div>
+            <p class="mb-1 small text-white-75">Live campus listings</p>
+            <h3 class="mb-0">{{ featured_listings|length }} new offers today</h3>
+          </div>
+          <span class="badge bg-white text-primary fs-6">Fast move-out</span>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="badge badge-pill bg-white text-primary">Furniture</span>
+          <span class="badge badge-pill bg-white text-primary">Textbooks</span>
+          <span class="badge badge-pill bg-white text-primary">Electronics</span>
+          <span class="badge badge-pill bg-white text-primary">Free</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row gy-4">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4>Featured offers</h4>
+        <p class="text-muted mb-0">Top student listings selected for fast pickup.</p>
+      </div>
+      <a href="{{ url_for('listings.browse') }}" class="text-decoration-none">See all listings -&gt;</a>
+    </div>
+
+    <div class="row g-4">
+      {% for listing in featured_listings %}
+      <div class="col-md-6">
+        <a href="{{ url_for('listings.view', listing_id=listing.id) }}" class="text-decoration-none">
+          <div class="card market-card h-100 shadow-sm overflow-hidden">
+            {% if listing.image_url %}
+          <div class="market-card-image" style="background-image: url('{{ listing.image_url }}')"></div>
+          {% else %}
+          <div class="market-card-image bg-secondary d-flex align-items-center justify-content-center text-white">No image</div>
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h5 class="card-title mb-2">{{ listing.title }}</h5>
+                <p class="text-muted small mb-0">{{ listing.category }} · {{ listing.condition }}</p>
+                <p class="text-muted small mb-0">{{ listing.location }} · {{ listing.university }}</p>
+              </div>
+              <div class="text-end">
+                <span class="badge badge-market {{ listing.urgency_badge_class }}">{{ listing.urgency_label }}</span>
+                {% if current_user.is_authenticated and listing.seller_id == current_user.id %}
+                <div class="mt-2">
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle">My listing</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            <p class="text-muted small mb-4 text-truncate">{{ listing.description }}</p>
+              <div class="mt-auto">
+                <div>
+                  <span class="h5 mb-0 d-block">{{ 'FREE' if listing.free else 'RM ' ~ ('{:.2f}'.format(listing.price)) }}</span>
+                  <small class="text-muted">Available until {{ listing.departure_date.strftime('%b %d') }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% if current_user.is_authenticated %}
+<div class="row mt-5" id="my-listings">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h4>My listings</h4>
+        <p class="text-muted small mb-0">Your current sale and giveaway posts.</p>
+      </div>
+      <a class="btn btn-outline-primary" href="{{ url_for('listings.create_listing') }}">Add listing</a>
+    </div>
+    {% if my_listings %}
+    <div class="row g-4">
+      {% for listing in my_listings %}
+      <div class="col-md-4">
+        <a href="{{ url_for('listings.view', listing_id=listing.id) }}" class="text-decoration-none">
+          <div class="card market-mini-card h-100 shadow-sm">
+            {% if listing.image_url %}
+          <img src="{{ listing.image_url }}" class="card-img-top" alt="{{ listing.title }}">
+          {% else %}
+          <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 180px;">No image</div>
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h6 class="card-title mb-1">{{ listing.title }}</h6>
+            <p class="text-muted small mb-2">{{ listing.location }} · {{ listing.university }}</p>
+            <p class="card-text small mb-3 text-truncate">{{ listing.description[:90] }}{% if listing.description|length > 90 %}...{% endif %}</p>
+            <div class="mt-auto d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">{{ 'FREE' if listing.free else 'RM ' ~ ('{:.2f}'.format(listing.price)) }}</span>
+              <span class="badge badge-market {{ listing.urgency_badge_class }}">{{ listing.urgency_label }}</span>
+            </div>
+            <small class="text-muted mt-2 d-block">Open listing to manage or delete</small>
+          </div>
+        </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">You have not posted any listings yet. Start by creating your first sale item.</div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

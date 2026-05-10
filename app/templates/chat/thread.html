@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set is_seller = current_user.id == thread.seller_id %}
+{% set other_user = thread.buyer if is_seller else thread.seller %}
+<div class="row">
+  <div class="col-lg-9 mx-auto">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h4 class="card-title mb-1">{{ thread.listing.title }}</h4>
+            <p class="text-muted mb-0">Chat with {{ other_user.name }}</p>
+          </div>
+          <span class="badge {{ 'bg-success' if thread.status == 'accepted' else 'bg-danger' if thread.status == 'declined' else 'bg-secondary' }}">
+            {{ thread.status|capitalize }}
+          </span>
+        </div>
+
+        {% if is_seller and thread.status == "open" %}
+        <div class="d-flex gap-2 mb-3">
+          <form method="post" action="{{ url_for('chat.offer_action', thread_id=thread.id, action='accept') }}">
+            {{ action_form.hidden_tag() }}
+            <button class="btn btn-success btn-sm">Accept Offer</button>
+          </form>
+          <form method="post" action="{{ url_for('chat.offer_action', thread_id=thread.id, action='decline') }}">
+            {{ action_form.hidden_tag() }}
+            <button class="btn btn-outline-danger btn-sm">Decline Offer</button>
+          </form>
+        </div>
+        {% endif %}
+
+        <div class="mb-4 border rounded-3 p-3" style="max-height: 420px; overflow-y: auto;">
+          {% for message in messages %}
+            <div class="py-2">
+              <div class="small text-muted mb-1">
+                <strong>{{ message.sender.name }}</strong> · {{ message.created_at.strftime('%Y-%m-%d %H:%M') }}
+              </div>
+              <p class="mb-0">{{ message.body }}</p>
+            </div>
+            {% if not loop.last %}<hr class="my-2" />{% endif %}
+          {% else %}
+            <div class="alert alert-secondary mb-0">No messages yet. Start the conversation.</div>
+          {% endfor %}
+        </div>
+
+        {% if thread.status == "open" %}
+        <form method="post">
+          {{ message_form.hidden_tag() }}
+          <div class="mb-3">{{ message_form.message(class_='form-control', rows=3, placeholder='Type your message...') }}</div>
+          <button class="btn btn-primary">{{ message_form.submit.label.text }}</button>
+        </form>
+        {% else %}
+        <div class="alert alert-light border mb-0">
+          This conversation is closed because the offer was {{ thread.status }}.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

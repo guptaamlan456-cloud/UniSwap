@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-5">
+        <h2 class="mb-2">Edit Profile</h2>
+        <p class="text-muted mb-4">Update your personal details shown on listings.</p>
+
+        <form method="post">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            {{ form.name.label(class_='form-label fw-semibold') }}
+            {{ form.name(class_='form-control form-control-lg') }}
+            {% for error in form.name.errors %}
+              <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.location.label(class_='form-label fw-semibold') }}
+            {{ form.location(class_='form-select form-select-lg', id='location') }}
+            {% for error in form.location.errors %}
+              <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="mb-3 d-none" id="location-other-wrap">
+            {{ form.location_other.label(class_='form-label fw-semibold') }}
+            {{ form.location_other(class_='form-control form-control-lg', placeholder='Enter your area') }}
+            {% for error in form.location_other.errors %}
+              <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="mb-4">
+            {{ form.university.label(class_='form-label fw-semibold') }}
+            {{ form.university(class_='form-select form-select-lg', id='university') }}
+            {% for error in form.university.errors %}
+              <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="mb-4 d-none" id="university-other-wrap">
+            {{ form.university_other.label(class_='form-label fw-semibold') }}
+            {{ form.university_other(class_='form-control form-control-lg', placeholder='Enter your university') }}
+            {% for error in form.university_other.errors %}
+              <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-primary">Save Changes</button>
+            <a href="{{ url_for('main.profile') }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const location = document.getElementById("location");
+    const university = document.getElementById("university");
+    const locationWrap = document.getElementById("location-other-wrap");
+    const universityWrap = document.getElementById("university-other-wrap");
+
+    function toggleOther(selectEl, wrapEl) {
+      if (!selectEl || !wrapEl) return;
+      wrapEl.classList.toggle("d-none", selectEl.value !== "Other");
+    }
+
+    if (location) {
+      location.addEventListener("change", () => toggleOther(location, locationWrap));
+      toggleOther(location, locationWrap);
+    }
+    if (university) {
+      university.addEventListener("change", () => toggleOther(university, universityWrap));
+      toggleOther(university, universityWrap);
+    }
+  })();
+</script>
+{% endblock %}
