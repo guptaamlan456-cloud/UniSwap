@@ -22,6 +22,9 @@ def create_app():
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
+    with app.app_context():
+        db.create_all()
+
     cloudinary.config(
         cloud_name=app.config.get("CLOUDINARY_CLOUD_NAME"),
         api_key=app.config.get("CLOUDINARY_API_KEY"),
