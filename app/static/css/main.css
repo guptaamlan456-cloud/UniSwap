@@ -256,3 +256,14 @@ footer .container {
     width: min(92vw, 330px);
   }
 }
+.listing-detail-image {
+  width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  background: #f8f9fa;
+  display: block;
+}
+
+.thumbnail-image:hover {
+  border: 2px solid #2563eb !important;
+}
