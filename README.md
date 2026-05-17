@@ -54,7 +54,69 @@ The project was later converted into an Android APK using Flutter WebView so it 
 - WebView Flutter
 
 ---
+## Running the Project Locally
 
+### Clone Repository
+```bash
+git clone https://github.com/your-username/UniSwap.git
+cd UniSwap
+```
+
+### Install Dependencies
+```bash
+py -m pip install -r requirements.txt
+```
+
+### Configure Environment
+Create a `.env` file:
+
+```env
+FLASK_APP=run.py
+FLASK_ENV=development
+SECRET_KEY=your_secret_key
+DATABASE_URL=your_postgresql_database_url
+```
+
+### Database Setup
+```bash
+py -m flask db upgrade
+py seed_data.py
+```
+
+### Run Flask Server
+```bash
+py -m flask run
+```
+
+Open:
+```text
+http://localhost:5000
+```
+
+---
+
+## APK Build Process
+
+### Install Flutter Dependencies
+```bash
+flutter pub get
+```
+
+### Run APK Locally
+```bash
+flutter run
+```
+
+### Build Release APK
+```bash
+flutter build apk --release
+```
+
+APK output:
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+---
 # Challenges Faced
 
 - Integrating PostgreSQL with Railway deployment
